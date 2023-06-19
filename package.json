@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "@turbo/gen": "^1.9.7",
+    "turbo": "latest"
+  },
+  "name": "temtem-test",
+  "packageManager": "yarn@1.22.15",
+  "workspaces": [
+    "apps/*"
+  ]
+}
