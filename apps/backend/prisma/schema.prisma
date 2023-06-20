@@ -7,31 +7,29 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:D9IQuxINalCjQ1bm@db.aqcllfsovcwzrqluzjob.supabase.co:5432/postgres"
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  username String   @unique
-  password String
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  password  String
   favorites Favorite[]
 }
 
 model Content {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String?
-  trailerUrl  String?
-  themoviedb_id Int
+  moviedbId   Int     @unique
+  bannerUrl   String?
   favorites   Favorite[]
 }
 
 model Favorite {
-  id       Int    @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   userId   Int
-  user     User   @relation(fields: [userId], references: [id])
-  contentId  Int?
-  content    Content? @relation(fields: [contentId], references: [id])
-
-  @@unique([userId, contentId])
+  user     User     @relation(fields: [userId], references: [id])
+  contentId Int?  
+  content  Content? @relation(fields: [contentId], references: [id])
 }
