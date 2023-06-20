@@ -1,11 +1,45 @@
-import { Redirect } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import SafeLayout from "../components/SafeLayout";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 
 export default function App() {
-  const isAuthenticated = false;
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem("token");
+      setIsLoading(false);
+
+      if (token) {
+        setIsAuthenticated(true);
+        router.push("/home");
+      } else {
+        router.push("/auth/sign-in");
+      }
+    };
+
+    checkToken();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator
+          size="large"
+          color="white"
+          animating
+          hidesWhenStopped
+        />
+      </View>
+    );
+  }
+
   return (
     <SafeLayout>
       {isAuthenticated ? (
@@ -20,7 +54,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#09090F",
     alignItems: "center",
     justifyContent: "center",
   },

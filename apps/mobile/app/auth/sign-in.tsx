@@ -18,6 +18,7 @@ import { AppContext } from "./state/context";
 import { AUTH_FORM } from "./constants";
 import { http } from "../../http/config";
 import Icon from "react-native-remix-icon";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignIn() {
   const router = useRouter();
@@ -65,6 +66,7 @@ export default function SignIn() {
         payload: data,
       });
 
+      await AsyncStorage.setItem("token", data.token);
       router.push("/home");
     } catch (e: any) {
       setIsLoading(false);

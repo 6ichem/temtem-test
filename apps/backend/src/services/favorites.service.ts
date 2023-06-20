@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import { getUserIdFromToken } from "../utils";
 
 const prisma = new PrismaClient();
-const jwtSecret = process.env.JWT_SECRET || "";
 
 export const addToFavorites = async (req: Request) => {
   try {
