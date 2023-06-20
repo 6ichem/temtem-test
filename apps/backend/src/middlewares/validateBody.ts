@@ -12,7 +12,7 @@ export const validateBody =
       const errorMessages = errors.flatMap((error) =>
         Object.values(error.constraints || {})
       );
-      return res.status(400).json({ errors: errorMessages });
+      return res.status(400).json({ message: errorMessages.join(", ") });
     }
 
     next();

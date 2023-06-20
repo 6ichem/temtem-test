@@ -28,11 +28,11 @@ export async function createUser(request: Request): Promise<AuthUser> {
 
     return { id: user.id, username: user.username, token };
   } catch (error: any) {
-    if (error.code == "P2002") {
+    if (error.code === "P2002") {
       throw new Error("Username already exists");
-    } else {
-      throw new Error("Error creating user");
     }
+
+    throw new Error(error.toString() || "An internal error occurred");
   }
 }
 
@@ -56,6 +56,6 @@ export async function signIn(request: Request): Promise<AuthUser> {
 
     return { id: user.id, username: user.username, token };
   } catch (error: any) {
-    throw new Error("Error signing in");
+    throw new Error(error.toString() || "An internal error occurred");
   }
 }

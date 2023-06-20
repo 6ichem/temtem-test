@@ -7,79 +7,95 @@ const prisma = new PrismaClient();
 const jwtSecret = process.env.JWT_SECRET || "";
 
 export const addToFavorites = async (req: Request) => {
-  const { title, description, bannerUrl, moviedbId } = req.body;
-  const userId = getUserIdFromToken(req);
+  try {
+    const { title, description, bannerUrl, moviedbId } = req.body;
+    const userId = getUserIdFromToken(req);
 
-  if (!userId) {
-    throw new Error("User not authenticated");
-  }
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
 
-  if (!user) {
-    throw new Error("User not found");
-  }
+    if (!user) {
+      throw new Error("User not found");
+    }
 
-  const favorite = await prisma.favorite.create({
-    data: {
-      user: {
-        connect: { id: userId },
-      },
-      content: {
-        connectOrCreate: {
-          where: { moviedbId: moviedbId },
-          create: {
-            title,
-            description,
-            bannerUrl,
-            moviedbId,
+    const favorite = await prisma.favorite.create({
+      data: {
+        user: {
+          connect: { id: userId },
+        },
+        content: {
+          connectOrCreate: {
+            where: { moviedbId: moviedbId },
+            create: {
+              title,
+              description,
+              bannerUrl,
+              moviedbId,
+            },
           },
         },
       },
-    },
-    include: {
-      content: true,
-    },
-  });
+      include: {
+        content: true,
+      },
+    });
 
-  return favorite;
+    return favorite;
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      throw new Error("Content already exists");
+    }
+
+    throw new Error(error.toString() || "An internal error occurred");
+  }
 };
 
 export const removeFromFavorites = async (req: Request) => {
-  const { contentId } = req.body;
-  const userId = getUserIdFromToken(req);
+  try {
+    const { contentId } = req.body;
+    const userId = getUserIdFromToken(req);
 
-  if (!userId) {
-    throw new Error("User not authenticated");
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    const favorite = await prisma.favorite.deleteMany({
+      where: {
+        userId,
+        contentId,
+      },
+    });
+
+    return favorite;
+  } catch (error: any) {
+    throw new Error(error.toString());
   }
-
-  const favorite = await prisma.favorite.deleteMany({
-    where: {
-      userId,
-      contentId,
-    },
-  });
-
-  return favorite;
 };
 
 export const getFavorites = async (req: Request) => {
-  const userId = getUserIdFromToken(req);
+  try {
+    const userId = getUserIdFromToken(req);
 
-  if (!userId) {
-    throw new Error("User not authenticated");
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    const favorites = await prisma.favorite.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        content: true,
+      },
+    });
+
+    return favorites;
+  } catch (error: any) {
+    throw new Error(error.toString() || "An internal error occurred");
   }
-
-  const favorites = await prisma.favorite.findMany({
-    where: {
-      userId,
-    },
-    include: {
-      content: true,
-    },
-  });
-
-  return favorites;
 };

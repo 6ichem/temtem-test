@@ -9,10 +9,7 @@ export default function App() {
   return (
     <SafeLayout>
       {isAuthenticated ? (
-        <View>
-          <Text style={{ color: "white" }}>Skhana.</Text>
-          <StatusBar style="light" />
-        </View>
+        <Redirect href="/home" />
       ) : (
         <Redirect href="/auth/sign-in" />
       )}

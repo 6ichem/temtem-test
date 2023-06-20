@@ -5,17 +5,79 @@ import {
   Image,
   ImageBackground,
   Pressable,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useContext, useState } from "react";
 import SafeLayout from "../../components/SafeLayout";
 import Input from "../../components/Input";
 import { GlobalStyles } from "../../core/globalStyles";
 import CustomButton from "../../components/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { AppContext } from "./state/context";
+import { http } from "../../http/config";
+import Icon from "react-native-remix-icon";
+import { AUTH_FORM } from "./constants";
 
 export default function SignUp() {
   const router = useRouter();
+  const { state, dispatch } = useContext(AppContext);
+
+  const [registerForm, setRegisterForm] = useState({
+    username: "",
+    password: "",
+  });
+
+  const [registerError, setRegisterError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRegisterFormChange = (key: string, value: string) => {
+    setRegisterError("");
+    setRegisterForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmitRegister = async () => {
+    // Validate the form before submitting
+    if (registerForm.username === "" || registerForm.password === "") {
+      setRegisterError("Please fill in all the fields");
+      return;
+    }
+
+    if (
+      registerForm.username.length < 3 ||
+      registerForm.username.trim().length < 3
+    ) {
+      setRegisterError("Username must be at least 3 characters long");
+      return;
+    }
+
+    if (
+      registerForm.password.length < 6 ||
+      registerForm.password.trim().length < 6
+    ) {
+      setRegisterError("Password must be at least 6 characters long");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      const { data }: any = await http.post("/auth/sign-up", registerForm);
+
+      setIsLoading(false);
+
+      dispatch({
+        type: "SET_USER",
+        payload: data,
+      });
+
+      router.push("/home");
+    } catch (e: any) {
+      setIsLoading(false);
+      setRegisterError(e?.response?.data?.message || "Something went wrong");
+    }
+  };
 
   return (
     <SafeLayout>
@@ -33,25 +95,61 @@ export default function SignUp() {
           />
         </View>
 
-        <View style={styles.container}>
-          <Text style={styles.text}>Sign Up</Text>
-
-          <View style={styles.form}>
-            <Input placeholder="Username" />
-            <Input placeholder="Password" secureTextEntry />
-          </View>
-
-          <Pressable
-            style={styles.signUpInfo}
-            onPress={() => router.push("/auth/sign-in")}
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+          <ScrollView
+            contentContainerStyle={styles.contentContainer}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={styles.signUpInfo.signUpText}>
-              Already have an account? Sign in here
-            </Text>
-          </Pressable>
+            <View style={styles.container}>
+              <Text
+                style={{
+                  ...styles.text,
+                  marginBottom: registerError !== "" ? 12 : 24,
+                }}
+              >
+                Sign up
+              </Text>
 
-          <CustomButton title="Register" />
-        </View>
+              {registerError !== "" && (
+                <View style={styles.errorContainer}>
+                  <Icon name="error-warning-line" color="red" size={20} />
+                  <Text style={styles.errorText}>{registerError}</Text>
+                </View>
+              )}
+
+              <View style={styles.form}>
+                <Input
+                  placeholder="Username"
+                  onChangeText={(e) =>
+                    handleRegisterFormChange(AUTH_FORM.USERNAME, e)
+                  }
+                />
+                <Input
+                  placeholder="Password"
+                  secureTextEntry
+                  onChangeText={(e) =>
+                    handleRegisterFormChange(AUTH_FORM.PASSWORD, e)
+                  }
+                />
+              </View>
+
+              <Pressable
+                style={styles.signUpInfo}
+                onPress={() => router.push("/auth/sign-in")}
+              >
+                <Text style={styles.signUpInfo.signUpText}>
+                  Already have an account? Sign in here
+                </Text>
+              </Pressable>
+
+              <CustomButton
+                title="Register"
+                isLoading={isLoading}
+                onPress={handleSubmitRegister}
+              />
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </SafeLayout>
   );
@@ -60,18 +158,15 @@ export default function SignUp() {
 const styles = StyleSheet.create({
   Root: {
     flex: 1,
-    position: "relative",
   },
   container: {
     flex: 1,
     padding: 16,
-    position: "relative",
   },
   text: {
     ...GlobalStyles.CustonFontBold,
     color: "white",
     fontSize: 32,
-    marginBottom: 32,
   },
   form: {
     width: "100%",
@@ -79,7 +174,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   imageContainer: {
-    position: "relative",
     width: "100%",
     height: 300,
     flex: 1,
@@ -94,5 +188,24 @@ const styles = StyleSheet.create({
       ...GlobalStyles.CustonFontRegular,
       color: "#A0A0A0",
     },
+  },
+  errorContainer: {
+    flexDirection: "row",
+    gap: 5,
+  },
+  errorText: {
+    ...GlobalStyles.CustonFontRegular,
+    color: "red",
+    marginBottom: 16,
+    fontSize: 14,
+    flex: 1,
+    flexWrap: "wrap",
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
   },
 });

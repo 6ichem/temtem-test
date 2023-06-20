@@ -8,6 +8,7 @@ export default function Input({ ...rest }: RNTextInputProps) {
     <TextInput
       style={styles.TextInput}
       placeholderTextColor="#A0A0A0"
+      autoCapitalize="none"
       {...rest}
     />
   );
