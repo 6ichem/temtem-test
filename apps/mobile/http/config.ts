@@ -7,7 +7,7 @@ import axios from "axios";
 const iosUrl = "http://localhost";
 const androidUrl = "http://10.0.2.2";
 const url = Platform.OS === "ios" ? iosUrl : androidUrl;
-console.log(Platform.OS);
+
 export const http = axios.create({
   baseURL: `${url}:4200/api`,
 });

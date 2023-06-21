@@ -16,29 +16,39 @@ import { AppContext } from "../../home/state/context";
 import { actionTypes } from "../../home/state/actions";
 import { IMAGE_TYPES } from "../../home/constants";
 import { GlobalStyles } from "../../../core/globalStyles";
+import { useRouter } from "expo-router";
 
-const SearchItem = ({ result }: { result: any }) => (
-  <TouchableOpacity key={result.id} style={searchItemStyles.searchResultItem}>
-    {result.poster_path || result.backdrop_path ? (
-      <Image
-        style={searchItemStyles.searchResultBanner}
-        source={{
-          uri: result.poster_path
-            ? `${IMAGE_TYPES.IMAGE}/${result.poster_path}`
-            : `${IMAGE_TYPES.BACKDROP}/${result.backdrop_path}`,
-        }}
-        resizeMode="cover"
-      />
-    ) : (
-      <View style={searchItemStyles.noImagePlaceholder}>
-        <Text style={searchItemStyles.noImageText}>No image available.</Text>
-      </View>
-    )}
-    <Text style={searchItemStyles.searchResultText}>
-      {result.title || result.name}
-    </Text>
-  </TouchableOpacity>
-);
+const SearchItem = ({ result }: { result: any }) => {
+  const router = useRouter();
+  return (
+    <TouchableOpacity
+      key={result.id}
+      style={searchItemStyles.searchResultItem}
+      onPress={() =>
+        router.push(`/details?id=${result.id}&type=${result.media_type}`)
+      }
+    >
+      {result.poster_path || result.backdrop_path ? (
+        <Image
+          style={searchItemStyles.searchResultBanner}
+          source={{
+            uri: result.poster_path
+              ? `${IMAGE_TYPES.IMAGE}/${result.poster_path}`
+              : `${IMAGE_TYPES.BACKDROP}/${result.backdrop_path}`,
+          }}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={searchItemStyles.noImagePlaceholder}>
+          <Text style={searchItemStyles.noImageText}>No image available.</Text>
+        </View>
+      )}
+      <Text style={searchItemStyles.searchResultText}>
+        {result.title || result.name}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 const ResultView = ({
   searchResults,
@@ -73,6 +83,11 @@ export default function Search() {
   const { searchContent: searchResults }: any = state ?? {};
 
   const handleSearch = async (searchQuery: string) => {
+    dispatch({
+      type: actionTypes.SET_SEARCH_CONTENT,
+      payload: null,
+    });
+
     try {
       const accessToken = await initHttpToken();
 

@@ -47,11 +47,7 @@ const Filters = () => {
   const router = useRouter();
   return (
     <View style={filtersStyles.filterRow}>
-      <FilterButton
-        iconName="file-list-line"
-        title="Genres"
-        onPress={() => router.push("/details")}
-      />
+      <FilterButton iconName="file-list-line" title="Genres" />
       <FilterButton iconName="star-line" title="Top Rated" />
       <FilterButton iconName="film-line" title="Movies" />
       <FilterButton iconName="movie-line" title="Series" />
@@ -59,34 +55,43 @@ const Filters = () => {
   );
 };
 
-const ResultsView = ({ data }: { data: any[] }) => (
-  <View style={{ marginTop: 12 }}>
-    <ScrollView
-      horizontal={true}
-      showsHorizontalScrollIndicator={false}
-      style={resultsStyles.container}
-    >
-      {data?.map((item) => (
-        <View style={resultsStyles.resultItem} key={item.id}>
-          <Image
-            style={{
-              width: Dimensions.get("window").width / 2,
-              height: 300,
-              borderRadius: 16,
-            }}
-            source={{
-              uri: `${IMAGE_TYPES.IMAGE}/${item.poster_path}`,
-            }}
-            resizeMode="cover"
-          />
-          <Text style={resultsStyles.resultItemTitle}>
-            {item.name || item.title}
-          </Text>
-        </View>
-      ))}
-    </ScrollView>
-  </View>
-);
+const ResultsView = ({ data }: { data: any[] }) => {
+  const router = useRouter();
+  return (
+    <View style={{ marginTop: 12 }}>
+      <ScrollView
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        style={resultsStyles.container}
+      >
+        {data?.map((item) => (
+          <TouchableOpacity
+            style={resultsStyles.resultItem}
+            key={item.id}
+            onPress={() =>
+              router.push(`/details?id=${item.id}&type=${item.media_type}`)
+            }
+          >
+            <Image
+              style={{
+                width: Dimensions.get("window").width / 2,
+                height: 300,
+                borderRadius: 16,
+              }}
+              source={{
+                uri: `${IMAGE_TYPES.IMAGE}/${item.poster_path}`,
+              }}
+              resizeMode="cover"
+            />
+            <Text style={resultsStyles.resultItemTitle}>
+              {item.name || item.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
 
 export default function Home() {
   const router = useRouter();
@@ -246,7 +251,6 @@ const resultsStyles = StyleSheet.create({
   resultItem: {
     width: Dimensions.get("window").width / 2,
     borderRadius: 16,
-    padding: 12,
     flexDirection: "column",
     marginRight: 24,
   },

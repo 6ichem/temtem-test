@@ -1,6 +1,7 @@
 import { Request } from "express";
 import jwt, { VerifyCallback, Secret } from "jsonwebtoken";
 import { JwtPayload } from "../interfaces/utils";
+import { MEDIA_TYPES } from "./constants";
 
 const jwtSecret = process.env.JWT_SECRET ?? "";
 
@@ -34,4 +35,15 @@ export const getUserIdFromToken = (req: Request): number | null => {
   }
 
   return null;
+};
+
+export const getMediaURL = (mediaType: string) => {
+  switch (mediaType) {
+    case MEDIA_TYPES.MOVIE:
+      return "/movie";
+    case MEDIA_TYPES.TV:
+      return "/tv";
+    default:
+      break;
+  }
 };

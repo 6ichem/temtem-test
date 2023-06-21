@@ -1,6 +1,11 @@
 import express from "express";
 import { authenticateJWT } from "../middlewares/authenticateJWT";
-import { getTrending, querySearch } from "../services/content.service";
+import {
+  getContentDetails,
+  getContentTrailer,
+  getTrending,
+  querySearch,
+} from "../services/content.service";
 
 const router = express.Router();
 
@@ -17,6 +22,26 @@ router.get("/trending", authenticateJWT, async (req, res) => {
 router.get("/search", authenticateJWT, async (req, res) => {
   try {
     const resp = await querySearch(req);
+
+    return res.json(resp);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+router.get("/details", authenticateJWT, async (req, res) => {
+  try {
+    const resp = await getContentDetails(req);
+
+    return res.json(resp);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+router.get("/trailer", authenticateJWT, async (req, res) => {
+  try {
+    const resp = await getContentTrailer(req);
 
     return res.json(resp);
   } catch (error: any) {

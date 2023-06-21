@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import { Tabs } from "expo-router";
 import Icon from "react-native-remix-icon";
 import { ContentContextProvider } from "./state/context";
@@ -16,7 +16,7 @@ export default function _layout() {
               tabBarStyle: {
                 backgroundColor: "transparent",
                 borderTopColor: "transparent",
-                padding: 16,
+                height: Dimensions.get("window").height * 0.1,
               },
               tabBarShowLabel: false,
               tabBarActiveTintColor: "white",
