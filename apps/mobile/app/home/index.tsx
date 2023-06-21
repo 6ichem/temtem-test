@@ -7,6 +7,7 @@ import {
   Pressable,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import SafeLayout from "../../components/SafeLayout";
@@ -20,7 +21,7 @@ import { actionTypes as authActionTypes } from "../auth/state/actions";
 import { IMAGE_TYPES } from "./constants";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AuthCoontext } from "../auth/state/context";
+import { AuthContext } from "../auth/state/context";
 
 const FilterButton = ({
   iconName,
@@ -97,8 +98,10 @@ export default function Home() {
   const router = useRouter();
 
   const [isLoading, setLoading] = useState(false);
+
   const { state, dispatch } = useContext(AppContext);
-  const { state: authState, dispatch: authDispatch } = useContext(AuthCoontext);
+  const { state: authState, dispatch: authDispatch }: any =
+    useContext(AuthContext);
 
   const { trendingContent: trendingResults }: any = state ?? {};
 
@@ -150,28 +153,43 @@ export default function Home() {
 
   return (
     <SafeLayout>
-      <View style={mainStyles.container}>
-        <View style={mainStyles.heading}>
-          <Text style={mainStyles.heading.title}>Welcome,</Text>
-          <Text style={mainStyles.heading.bio}>Daizy!</Text>
+      {isLoading ? (
+        <View style={mainStyles.rootLoader}>
+          <ActivityIndicator
+            size="large"
+            color="white"
+            animating
+            hidesWhenStopped
+          />
         </View>
-        <Text style={mainStyles.sub}>Check our latest additions.</Text>
+      ) : (
+        <View style={mainStyles.container}>
+          <View style={mainStyles.heading}>
+            <Text style={mainStyles.heading.title}>Welcome,</Text>
+            <Text style={mainStyles.heading.bio}>
+              {authState?.user?.username}!
+            </Text>
+          </View>
+          <Text style={mainStyles.sub}>Check our latest additions.</Text>
 
-        <View style={mainStyles.filterContainer}>
-          <Filters />
-        </View>
-
-        <View style={mainStyles.featuredContent}>
-          <View style={mainStyles.featuredHeading}>
-            <Text style={mainStyles.featuredHeading.title}>Featured</Text>
-            <Text style={mainStyles.featuredHeading.bio}>Shows and Movies</Text>
+          <View style={mainStyles.filterContainer}>
+            <Filters />
           </View>
 
-          <View>
-            <ResultsView data={trendingResults} />
+          <View style={mainStyles.featuredContent}>
+            <View style={mainStyles.featuredHeading}>
+              <Text style={mainStyles.featuredHeading.title}>Featured</Text>
+              <Text style={mainStyles.featuredHeading.bio}>
+                Shows and Movies
+              </Text>
+            </View>
+
+            <View>
+              <ResultsView data={trendingResults} />
+            </View>
           </View>
         </View>
-      </View>
+      )}
     </SafeLayout>
   );
 }
@@ -217,6 +235,12 @@ const mainStyles = StyleSheet.create({
       fontSize: 24,
       color: "white",
     },
+  },
+  rootLoader: {
+    flex: 1,
+    backgroundColor: "#09090F",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

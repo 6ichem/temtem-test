@@ -69,16 +69,20 @@ export const getUser = async (req: Request) => {
       throw new Error("User not authenticated");
     }
 
-    const favorites = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         id: userId,
       },
       include: {
-        favorites: { include: { content: true } },
+        favorites: { select: { content: true } },
       },
     });
 
-    return favorites;
+    const filteredUser = {
+      ...user,
+      favorites: user?.favorites.map((favorite) => favorite.content),
+    };
+    return filteredUser;
   } catch (error: any) {
     throw new Error(error.toString() || "An internal error occurred");
   }

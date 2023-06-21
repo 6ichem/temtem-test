@@ -15,7 +15,7 @@ import { GlobalStyles } from "../../core/globalStyles";
 import CustomButton from "../../components/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { AuthCoontext } from "./state/context";
+import { AuthContext } from "./state/context";
 import { http } from "../../http/config";
 import Icon from "react-native-remix-icon";
 import { AUTH_FORM } from "./constants";
@@ -23,7 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignUp() {
   const router = useRouter();
-  const { state, dispatch } = useContext(AuthCoontext);
+  const { state, dispatch } = useContext(AuthContext);
 
   const [registerForm, setRegisterForm] = useState({
     username: "",

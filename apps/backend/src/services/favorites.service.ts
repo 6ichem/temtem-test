@@ -56,7 +56,7 @@ export const addToFavorites = async (req: Request) => {
 
 export const removeFromFavorites = async (req: Request) => {
   try {
-    const { contentId } = req.body;
+    const { id }: any = req.query;
     const userId = getUserIdFromToken(req);
 
     if (!userId) {
@@ -66,35 +66,12 @@ export const removeFromFavorites = async (req: Request) => {
     const favorite = await prisma.favorite.deleteMany({
       where: {
         userId,
-        contentId,
+        contentId: parseInt(id),
       },
     });
 
     return favorite;
   } catch (error: any) {
     throw new Error(error.toString());
-  }
-};
-
-export const getFavorites = async (req: Request) => {
-  try {
-    const userId = getUserIdFromToken(req);
-
-    if (!userId) {
-      throw new Error("User not authenticated");
-    }
-
-    const favorites = await prisma.favorite.findMany({
-      where: {
-        userId,
-      },
-      include: {
-        content: true,
-      },
-    });
-
-    return favorites;
-  } catch (error: any) {
-    throw new Error(error.toString() || "An internal error occurred");
   }
 };

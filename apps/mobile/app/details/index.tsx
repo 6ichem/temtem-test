@@ -8,7 +8,7 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SafeLayout from "../../components/SafeLayout";
 import { Stack, useRouter, useSearchParams } from "expo-router";
 import { http, initHttpToken } from "../../http/config";
@@ -23,42 +23,145 @@ import {
 } from "../../utils/stringUtils";
 import StarRating from "react-native-star-rating-widget";
 import { MEDIA_TYPES } from "../../utils/constants";
+import CustomButton from "../../components/Button";
+import { AuthContext, AuthContextProvider } from "../auth/state/context";
 
-const DetailView = ({ contentDetails, contentTrailer }: any) => (
-  <View style={{ paddingBottom: 68 }}>
-    <View style={detailStyles.DetailInfo}>
-      <Text style={detailStyles.DetailTitle}>
-        {contentDetails.name || contentDetails.title}
-      </Text>
+const DetailView = ({ contentDetails, contentTrailer }: any) => {
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
-      <HeaderDetails contentDetails={contentDetails} />
+  const { state, dispatch } = useContext(AuthContext);
+  const { user }: any = state ?? {};
 
-      <View style={detailStyles.DetailRatings}>
-        <StarRating
-          rating={countStars(contentDetails?.vote_average)}
-          onChange={() => {}}
-          starSize={24}
-        />
-        <Text style={detailStyles.DetailSub.TextStyle}>
-          ({contentDetails?.vote_count})
+  const [userFavorites, setUserFavorites] = useState(user.favorites ?? []);
+
+  const currentFav = userFavorites.find(
+    (item: any) => item.moviedbId === contentDetails.id
+  );
+
+  const isAlreadyFav = () => {
+    return userFavorites.some(
+      (item: any) => item.moviedbId === contentDetails.id
+    );
+  };
+
+  const addToFavourites = async ({
+    title,
+    description,
+    bannerUrl,
+    moviedbId,
+  }: {
+    title: string;
+    description: string;
+    bannerUrl: string;
+    moviedbId: number;
+  }) => {
+    setIsFavoriteLoading(true);
+    try {
+      const accessToken = await initHttpToken();
+
+      const { data } = await http.put(`/favorites/add`, {
+        title,
+        description,
+        bannerUrl,
+        moviedbId,
+      });
+
+      setIsFavoriteLoading(false);
+      setUserFavorites((prev: any) => [...prev, data.content]);
+    } catch (error) {
+      setIsFavoriteLoading(false);
+      throw error;
+    }
+  };
+
+  const removeFromFavourites = async () => {
+    setIsFavoriteLoading(true);
+    try {
+      const accessToken = await initHttpToken();
+
+      const { data } = await http.delete(`/favorites/remove`, {
+        params: {
+          id: parseInt(currentFav.id),
+        },
+      });
+
+      setIsFavoriteLoading(false);
+      setUserFavorites((prev: any) =>
+        prev.filter((item: any) => item.id !== currentFav.id)
+      );
+    } catch (error) {
+      setIsFavoriteLoading(false);
+      throw error;
+    }
+  };
+
+  return (
+    <View style={{ paddingBottom: 68 }}>
+      <View style={detailStyles.DetailInfo}>
+        <Text style={detailStyles.DetailTitle}>
+          {contentDetails.name || contentDetails.title}
         </Text>
+
+        <HeaderDetails contentDetails={contentDetails} />
+
+        <View style={detailStyles.DetailRatings}>
+          <StarRating
+            rating={countStars(contentDetails?.vote_average)}
+            onChange={() => {}}
+            starSize={24}
+          />
+
+          <Text style={detailStyles.DetailSub.TextStyle}>
+            ({contentDetails?.vote_count})
+          </Text>
+        </View>
+
+        <View style={{ flex: 1, marginTop: 16, justifyContent: "center" }}>
+          {isAlreadyFav() ? (
+            <CustomButton
+              title="Remove from Watchlist"
+              icon="close-circle-fill"
+              iconColor="white"
+              style={{ backgroundColor: "#FF3B30" }}
+              isLoading={isFavoriteLoading}
+              onPress={removeFromFavourites}
+            />
+          ) : (
+            <CustomButton
+              title="Add to Watchlist"
+              icon="heart-fill"
+              iconColor="white"
+              isLoading={isFavoriteLoading}
+              onPress={() =>
+                addToFavourites({
+                  title: contentDetails.name || contentDetails.title,
+                  description: contentDetails.overview,
+                  bannerUrl:
+                    `${IMAGE_TYPES.BACKDROP}/${contentDetails.backdrop_path}` ||
+                    `${IMAGE_TYPES.IMAGE}/${contentDetails.poster_path}`,
+                  moviedbId: contentDetails.id,
+                })
+              }
+            />
+          )}
+        </View>
       </View>
-    </View>
 
-    <View style={detailStyles.DetailContent}>
-      <View>
-        <Text style={detailStyles.DetailContent.HeadTitle}>Overview</Text>
-        <Text style={detailStyles.DetailContent.HeadBio}>
-          {contentDetails?.overview}
-        </Text>
+      <View style={detailStyles.DetailContent}>
+        <View>
+          <Text style={detailStyles.DetailContent.HeadTitle}>Overview</Text>
+          <Text style={detailStyles.DetailContent.HeadBio}>
+            {contentDetails?.overview}
+          </Text>
+        </View>
+
+        <SeasonsView contentDetails={contentDetails} />
       </View>
 
-      <SeasonsView contentDetails={contentDetails} />
+      <TrailerView contentTrailer={contentTrailer} />
     </View>
-
-    <TrailerView contentTrailer={contentTrailer} />
-  </View>
-);
+  );
+};
 
 const HeaderDetails = ({ contentDetails }: any) => (
   <View style={detailStyles.DetailSub}>
@@ -142,7 +245,10 @@ const TrailerView = ({ contentTrailer }: any) => {
               <View
                 style={{
                   flex: 1,
-                  width: Dimensions.get("window").width / 1.5,
+                  width:
+                    contentTrailer.length == 1
+                      ? Dimensions.get("window").width / 1 - 50
+                      : Dimensions.get("window").width / 1.5,
                   marginRight: 16,
                 }}
                 key={item.key}
@@ -241,40 +347,42 @@ export default function Details() {
         }}
       />
 
-      <View style={styles.imageContainer}>
-        <ImageBackground
-          source={{
-            uri: contentDetails.backdrop_path
-              ? `${IMAGE_TYPES.BACKDROP}/${contentDetails.backdrop_path}`
-              : `${IMAGE_TYPES.IMAGE}/${contentDetails.poster_path}`,
-          }}
-          style={styles.BannerImage}
-          resizeMode="cover"
-        />
-        <LinearGradient
-          style={{ ...StyleSheet.absoluteFillObject }}
-          colors={["#00000000", "#00000000", "#09090F"]}
-          locations={[0.1, 0.1, 1]}
-        />
-      </View>
-
-      <View style={styles.container}>
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-        >
-          {isLoading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#fff" />
-            </View>
-          ) : (
-            <DetailView
-              contentDetails={contentDetails}
-              contentTrailer={contentTrailer}
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      ) : (
+        <>
+          <View style={styles.imageContainer}>
+            <ImageBackground
+              source={{
+                uri: contentDetails.backdrop_path
+                  ? `${IMAGE_TYPES.BACKDROP}/${contentDetails.backdrop_path}`
+                  : `${IMAGE_TYPES.IMAGE}/${contentDetails.poster_path}`,
+              }}
+              style={styles.BannerImage}
+              resizeMode="cover"
             />
-          )}
-        </ScrollView>
-      </View>
+            <LinearGradient
+              style={{ ...StyleSheet.absoluteFillObject }}
+              colors={["#00000000", "#00000000", "#09090F"]}
+              locations={[0.1, 0.1, 1]}
+            />
+          </View>
+
+          <View style={styles.container}>
+            <ScrollView
+              contentContainerStyle={{ flexGrow: 1 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <DetailView
+                contentDetails={contentDetails}
+                contentTrailer={contentTrailer}
+              />
+            </ScrollView>
+          </View>
+        </>
+      )}
     </SafeLayout>
   );
 }
@@ -363,5 +471,6 @@ const resultsStyles = StyleSheet.create({
     marginTop: 12,
     textAlign: "center",
     alignSelf: "center",
+    justifyContent: "center",
   },
 });

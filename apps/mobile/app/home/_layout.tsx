@@ -3,42 +3,39 @@ import { View, StyleSheet, Dimensions } from "react-native";
 import { Tabs } from "expo-router";
 import Icon from "react-native-remix-icon";
 import { ContentContextProvider } from "./state/context";
-import { AuthContextProvider } from "../auth/state/context";
 
 export default function _layout() {
   return (
-    <AuthContextProvider>
-      <ContentContextProvider>
-        <View style={styles.container}>
-          <Tabs
-            screenOptions={({ route, navigation }) => ({
-              headerShown: false,
-              tabBarStyle: {
-                backgroundColor: "transparent",
-                borderTopColor: "transparent",
-                height: Dimensions.get("window").height * 0.1,
-              },
-              tabBarShowLabel: false,
-              tabBarActiveTintColor: "white",
-              tabBarIcon: ({ color }) => (
-                <View style={styles.tabIconContainer}>
-                  {navigation.isFocused() && (
-                    <View
-                      style={[styles.activeTabDot, { backgroundColor: color }]}
-                    />
-                  )}
-                  <Icon name={getIconName(route.name)} color={color} />
-                </View>
-              ),
-            })}
-          >
-            <Tabs.Screen name="index" />
-            <Tabs.Screen name="search/index" />
-            <Tabs.Screen name="profile/index" />
-          </Tabs>
-        </View>
-      </ContentContextProvider>
-    </AuthContextProvider>
+    <ContentContextProvider>
+      <View style={styles.container}>
+        <Tabs
+          screenOptions={({ route, navigation }) => ({
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: "transparent",
+              borderTopColor: "transparent",
+              height: Dimensions.get("window").height * 0.1,
+            },
+            tabBarShowLabel: false,
+            tabBarActiveTintColor: "white",
+            tabBarIcon: ({ color }) => (
+              <View style={styles.tabIconContainer}>
+                {navigation.isFocused() && (
+                  <View
+                    style={[styles.activeTabDot, { backgroundColor: color }]}
+                  />
+                )}
+                <Icon name={getIconName(route.name)} color={color} />
+              </View>
+            ),
+          })}
+        >
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="search/index" />
+          <Tabs.Screen name="profile/index" />
+        </Tabs>
+      </View>
+    </ContentContextProvider>
   );
 }
 

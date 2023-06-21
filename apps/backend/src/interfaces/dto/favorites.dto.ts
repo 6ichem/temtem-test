@@ -10,7 +10,7 @@ import {
 export class createFavoriteDto {
   @IsNotEmpty()
   @IsNumber()
-  public contentId: number;
+  public moviedbId: number;
 
   @IsNotEmpty()
   @IsString()
