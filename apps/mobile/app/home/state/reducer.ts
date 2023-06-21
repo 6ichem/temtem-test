@@ -5,10 +5,15 @@ export const reducer = (state: AppState, action: AppAction): AppState => {
   const { payload, type } = action;
 
   switch (type) {
-    case actionTypes.SET_USER:
+    case actionTypes.SET_TRENDING_CONTENT:
       return {
         ...state,
-        user: payload,
+        trendingContent: payload,
+      };
+    case actionTypes.SET_SEARCH_CONTENT:
+      return {
+        ...state,
+        searchContent: payload,
       };
     default:
       return state;

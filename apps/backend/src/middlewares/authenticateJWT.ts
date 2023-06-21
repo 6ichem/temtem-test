@@ -14,6 +14,8 @@ export const authenticateJWT = async (
     const userId = await authenticateToken(req);
     req.userId = userId !== null ? userId : undefined;
 
+    if (!req.userId) return res.status(401).json({ message: "Unauthorized" });
+
     next();
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized" });

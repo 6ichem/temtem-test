@@ -14,7 +14,7 @@ import { GlobalStyles } from "../../core/globalStyles";
 import CustomButton from "../../components/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { AppContext } from "./state/context";
+import { AuthCoontext } from "./state/context";
 import { AUTH_FORM } from "./constants";
 import { http } from "../../http/config";
 import Icon from "react-native-remix-icon";
@@ -22,7 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignIn() {
   const router = useRouter();
-  const { state, dispatch } = useContext(AppContext);
+  const { state, dispatch } = useContext(AuthCoontext);
 
   const [loginForm, setLoginForm] = useState({
     username: "",
@@ -69,6 +69,8 @@ export default function SignIn() {
       await AsyncStorage.setItem("token", data.token);
       router.push("/home");
     } catch (e: any) {
+      console.log(e);
+
       setIsLoading(false);
       setLoginError(e?.response?.data?.message || "Something went wrong");
     }
@@ -91,59 +93,54 @@ export default function SignIn() {
         </View>
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-          <ScrollView
-            contentContainerStyle={styles.contentContainer}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.container}>
-              <Text
-                style={{
-                  ...styles.text,
-                  marginBottom: loginError !== "" ? 12 : 24,
-                }}
-              >
-                Sign In
-              </Text>
+          <View style={styles.container}>
+            <Text
+              style={{
+                ...styles.text,
+                marginBottom: loginError !== "" ? 12 : 24,
+              }}
+            >
+              Sign In
+            </Text>
 
-              {loginError !== "" && (
-                <View style={styles.errorContainer}>
-                  <Icon name="error-warning-line" color="red" size={20} />
-                  <Text style={styles.errorText}>{loginError}</Text>
-                </View>
-              )}
-
-              <View style={styles.form}>
-                <Input
-                  placeholder="Username"
-                  onChangeText={(e) =>
-                    handleLoginFormChange(AUTH_FORM.USERNAME, e)
-                  }
-                />
-                <Input
-                  placeholder="Password"
-                  secureTextEntry
-                  onChangeText={(e) =>
-                    handleLoginFormChange(AUTH_FORM.PASSWORD, e)
-                  }
-                />
+            {loginError !== "" && (
+              <View style={styles.errorContainer}>
+                <Icon name="error-warning-line" color="red" size={20} />
+                <Text style={styles.errorText}>{loginError}</Text>
               </View>
+            )}
 
-              <Pressable
-                style={styles.signUpInfo}
-                onPress={() => router.push("/auth/sign-up")}
-              >
-                <Text style={styles.signUpInfo.signUpText}>
-                  Don't have an account? Sign up here
-                </Text>
-              </Pressable>
-
-              <CustomButton
-                title="Login"
-                isLoading={isLoading}
-                onPress={handleSubmitLogin}
+            <View style={styles.form}>
+              <Input
+                placeholder="Username"
+                onChangeText={(e) =>
+                  handleLoginFormChange(AUTH_FORM.USERNAME, e)
+                }
+              />
+              <Input
+                placeholder="Password"
+                secureTextEntry
+                onChangeText={(e) =>
+                  handleLoginFormChange(AUTH_FORM.PASSWORD, e)
+                }
               />
             </View>
-          </ScrollView>
+
+            <Pressable
+              style={styles.signUpInfo}
+              onPress={() => router.push("/auth/sign-up")}
+            >
+              <Text style={styles.signUpInfo.signUpText}>
+                Don't have an account? Sign up here
+              </Text>
+            </Pressable>
+
+            <CustomButton
+              title="Login"
+              isLoading={isLoading}
+              onPress={handleSubmitLogin}
+            />
+          </View>
         </KeyboardAvoidingView>
       </View>
     </SafeLayout>

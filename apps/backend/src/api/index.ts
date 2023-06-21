@@ -1,15 +1,13 @@
 import express from "express";
 
-import MessageResponse from "../interfaces/MessageResponse";
-
-import hello from "../router/hello";
-import auth from "../router/auth";
-import favorites from "../router/favorites";
+import auth from "../routes/auth";
+import favorites from "../routes/favorites";
+import content from "../routes/content";
 
 const router = express.Router();
 
-router.use("/hello", hello);
 router.use("/auth", auth);
-router.use("/favorites", auth);
+router.use("/favorites", favorites);
+router.use("/content", content);
 
 export default router;

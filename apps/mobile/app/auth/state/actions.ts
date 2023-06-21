@@ -3,6 +3,6 @@ export const actionTypes = {
 };
 
 export type AppAction = {
-  type: keyof typeof actionTypes;
+  type: string;
   payload: any;
 };

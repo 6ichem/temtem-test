@@ -4,9 +4,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "run-api": "turbo run dev",
-    "run-ios": "turbo run start-ios",
-    "run-android": "turbo run start-android"
+    "run-ios": "cd apps/mobile && yarn ios",
+    "run-android": "cd apps/mobile && yarn android"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",

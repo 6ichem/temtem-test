@@ -4,6 +4,7 @@ import { Request } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { AuthUser } from "../interfaces/CustomResponse";
+import { getUserIdFromToken } from "../utils";
 
 const prisma = new PrismaClient();
 
@@ -59,3 +60,26 @@ export async function signIn(request: Request): Promise<AuthUser> {
     throw new Error(error.toString() || "An internal error occurred");
   }
 }
+
+export const getUser = async (req: Request) => {
+  try {
+    const userId = getUserIdFromToken(req);
+
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    const favorites = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      include: {
+        favorites: { include: { content: true } },
+      },
+    });
+
+    return favorites;
+  } catch (error: any) {
+    throw new Error(error.toString() || "An internal error occurred");
+  }
+};

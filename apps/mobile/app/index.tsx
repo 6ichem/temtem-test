@@ -1,7 +1,5 @@
 import { Redirect, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import SafeLayout from "../components/SafeLayout";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
@@ -11,19 +9,19 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const checkToken = async () => {
+    const token = await AsyncStorage.getItem("token");
+    setIsLoading(false);
+
+    if (token) {
+      setIsAuthenticated(true);
+      router.push("/home");
+    } else {
+      router.push("/auth/sign-in");
+    }
+  };
+
   useEffect(() => {
-    const checkToken = async () => {
-      const token = await AsyncStorage.getItem("token");
-      setIsLoading(false);
-
-      if (token) {
-        setIsAuthenticated(true);
-        router.push("/home");
-      } else {
-        router.push("/auth/sign-in");
-      }
-    };
-
     checkToken();
   }, []);
 

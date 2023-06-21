@@ -7,13 +7,17 @@ import {
   createFavoriteDto,
   deleteFavoriteDto,
 } from "../interfaces/dto/favorites.dto";
-import { addToFavorites } from "../services/favorites.service";
+import {
+  addToFavorites,
+  getFavorites,
+  removeFromFavorites,
+} from "../services/favorites.service";
 
 const router = express.Router();
 
 router.get("/", authenticateJWT, async (req, res) => {
   try {
-    const resp = await createUser(req);
+    const resp = await getFavorites(req);
 
     return res.json(resp);
   } catch (error: any) {
@@ -42,7 +46,7 @@ router.delete(
   authenticateJWT,
   async (req, res) => {
     try {
-      const resp = await signIn(req);
+      const resp = await removeFromFavorites(req);
 
       return res.json(resp);
     } catch (error: any) {
