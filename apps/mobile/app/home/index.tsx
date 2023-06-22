@@ -51,12 +51,12 @@ const Filters = () => {
       <FilterButton iconName="star-line" title="Top Rated" />
       <FilterButton iconName="film-line" title="Movies" />
       <FilterButton iconName="movie-line" title="Series" />
-      <FilterButton iconName="file-list-line" title="Actors" />
+      <FilterButton iconName="group-fill" title="Actors" />
     </View>
   );
 };
 
-const ResultsView = ({ data }: { data: any[] }) => {
+const ContentItem = ({ data }: { data: any[] }) => {
   const router = useRouter();
   return (
     <View style={{ marginTop: 12 }}>
@@ -103,7 +103,7 @@ export default function Home() {
   const { state: authState, dispatch: authDispatch }: any =
     useContext(AuthContext);
 
-  const { trendingContent: trendingResults }: any = state ?? {};
+  const { trendingContent, airingContent, upcomingContent }: any = state ?? {};
 
   const handleTrending = async () => {
     try {
@@ -117,6 +117,44 @@ export default function Home() {
 
       dispatch({
         type: actionTypes.SET_TRENDING_CONTENT,
+        payload: data,
+      });
+    } catch (e: any) {
+      setLoading(false);
+    }
+  };
+
+  const handleAiringToday = async () => {
+    try {
+      const accessToken = await initHttpToken();
+
+      setLoading(true);
+
+      const { data }: any = await http.get("/content/airing-today");
+
+      setLoading(false);
+
+      dispatch({
+        type: actionTypes.SET_AIRING_CONTENT,
+        payload: data,
+      });
+    } catch (e: any) {
+      setLoading(false);
+    }
+  };
+
+  const handleUpcomingMovies = async () => {
+    try {
+      const accessToken = await initHttpToken();
+
+      setLoading(true);
+
+      const { data }: any = await http.get("/content/upcoming-movies");
+
+      setLoading(false);
+
+      dispatch({
+        type: actionTypes.SET_UPCOMING_CONTENT,
         payload: data,
       });
     } catch (e: any) {
@@ -149,7 +187,48 @@ export default function Home() {
 
   useEffect(() => {
     handleTrending();
+    handleAiringToday();
+    handleUpcomingMovies();
   }, []);
+
+  const _featured = () => (
+    <View style={mainStyles.featuredContent}>
+      <View style={mainStyles.featuredHeading}>
+        <Text style={mainStyles.featuredHeading.title}>Featured</Text>
+        <Text style={mainStyles.featuredHeading.bio}>Shows and Movies</Text>
+      </View>
+
+      <View>
+        <ContentItem data={trendingContent} />
+      </View>
+    </View>
+  );
+
+  const _airingToday = () => (
+    <View style={mainStyles.featuredContent}>
+      <View style={mainStyles.featuredHeading}>
+        <Text style={mainStyles.featuredHeading.title}>TV shows</Text>
+        <Text style={mainStyles.featuredHeading.bio}>airing today</Text>
+      </View>
+
+      <View>
+        <ContentItem data={airingContent} />
+      </View>
+    </View>
+  );
+
+  const _upcoming = () => (
+    <View style={{ ...mainStyles.featuredContent, paddingBottom: 50 }}>
+      <View style={mainStyles.featuredHeading}>
+        <Text style={mainStyles.featuredHeading.title}>Movies</Text>
+        <Text style={mainStyles.featuredHeading.bio}>releasing soon</Text>
+      </View>
+
+      <View>
+        <ContentItem data={upcomingContent} />
+      </View>
+    </View>
+  );
 
   return (
     <SafeLayout>
@@ -176,18 +255,11 @@ export default function Home() {
             <Filters />
           </View>
 
-          <View style={mainStyles.featuredContent}>
-            <View style={mainStyles.featuredHeading}>
-              <Text style={mainStyles.featuredHeading.title}>Featured</Text>
-              <Text style={mainStyles.featuredHeading.bio}>
-                Shows and Movies
-              </Text>
-            </View>
-
-            <View>
-              <ResultsView data={trendingResults} />
-            </View>
-          </View>
+          <ScrollView>
+            {_featured()}
+            {_airingToday()}
+            {_upcoming()}
+          </ScrollView>
         </View>
       )}
     </SafeLayout>
@@ -197,7 +269,8 @@ export default function Home() {
 const mainStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    paddingHorizontal: 30,
+    paddingTop: 30,
   },
   heading: {
     flexDirection: "row",
@@ -220,7 +293,9 @@ const mainStyles = StyleSheet.create({
     color: "#A0A0A0",
   },
   filterContainer: { marginVertical: 32 },
-  featuredContent: {},
+  featuredContent: {
+    paddingBottom: 32,
+  },
   featuredHeading: {
     flexDirection: "row",
     alignItems: "center",

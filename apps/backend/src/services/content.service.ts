@@ -69,3 +69,27 @@ export const getContentTrailer = async (req: Request) => {
     );
   }
 };
+
+export const getAiringToday = async () => {
+  try {
+    const { data }: any = await axios.get("tv/airing_today");
+
+    return data.results;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.status_message || "An internal error occurred"
+    );
+  }
+};
+
+export const getUpcoming = async () => {
+  try {
+    const { data }: any = await axios.get("movie/upcoming");
+
+    return data.results;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.status_message || "An internal error occurred"
+    );
+  }
+};

@@ -15,6 +15,16 @@ export const reducer = (state: AppState, action: AppAction): AppState => {
         ...state,
         searchContent: payload,
       };
+    case actionTypes.SET_AIRING_CONTENT:
+      return {
+        ...state,
+        airingContent: payload,
+      };
+    case actionTypes.SET_UPCOMING_CONTENT:
+      return {
+        ...state,
+        upcomingContent: payload,
+      };
     default:
       return state;
   }

@@ -1,9 +1,11 @@
 import express from "express";
 import { authenticateJWT } from "../middlewares/authenticateJWT";
 import {
+  getAiringToday,
   getContentDetails,
   getContentTrailer,
   getTrending,
+  getUpcoming,
   querySearch,
 } from "../services/content.service";
 
@@ -42,6 +44,26 @@ router.get("/details", authenticateJWT, async (req, res) => {
 router.get("/trailer", authenticateJWT, async (req, res) => {
   try {
     const resp = await getContentTrailer(req);
+
+    return res.json(resp);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+router.get("/airing-today", authenticateJWT, async (req, res) => {
+  try {
+    const resp = await getAiringToday();
+
+    return res.json(resp);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+router.get("/upcoming-movies", authenticateJWT, async (req, res) => {
+  try {
+    const resp = await getUpcoming();
 
     return res.json(resp);
   } catch (error: any) {

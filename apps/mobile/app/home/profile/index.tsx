@@ -50,8 +50,6 @@ export default function Profile() {
     router.push("/auth/sign-in");
   };
 
-  console.log(userFavorites);
-
   return (
     <SafeLayout>
       <View style={styles.container}>
