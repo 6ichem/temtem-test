@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export const addToFavorites = async (req: Request) => {
   try {
-    const { title, description, bannerUrl, moviedbId } = req.body;
+    const { title, description, bannerUrl, moviedbId, mediaType } = req.body;
     const userId = getUserIdFromToken(req);
 
     if (!userId) {
@@ -35,6 +35,7 @@ export const addToFavorites = async (req: Request) => {
               description,
               bannerUrl,
               moviedbId,
+              mediaType,
             },
           },
         },

@@ -6,6 +6,7 @@ import {
   IsIn,
   IsNumber,
 } from "class-validator";
+import { MEDIA_TYPES } from "../../utils/constants";
 
 export class createFavoriteDto {
   @IsNotEmpty()
@@ -23,6 +24,11 @@ export class createFavoriteDto {
   @IsNotEmpty()
   @IsString()
   public bannerUrl: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsIn([MEDIA_TYPES.TV, MEDIA_TYPES.MOVIE])
+  public mediaType: string;
 }
 
 export class deleteFavoriteDto {

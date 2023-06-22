@@ -27,7 +27,7 @@ import CustomButton from "../../components/Button";
 import { AuthContext, AuthContextProvider } from "../auth/state/context";
 import { actionTypes } from "../auth/state/actions";
 
-const DetailView = ({ contentDetails, contentTrailer }: any) => {
+const DetailView = ({ contentDetails, contentTrailer, mediaType }: any) => {
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
   const { state, dispatch } = useContext(AuthContext);
@@ -65,6 +65,7 @@ const DetailView = ({ contentDetails, contentTrailer }: any) => {
         description,
         bannerUrl,
         moviedbId,
+        mediaType,
       });
 
       setIsFavoriteLoading(false);
@@ -189,10 +190,11 @@ const HeaderDetails = ({ contentDetails }: any) => (
     )}
     <Text style={detailStyles.DetailSub.TextStyle}> | </Text>
     <Text style={detailStyles.DetailSub.TextStyle}>
-      {contentDetails?.genres
-        .slice(0, 2)
-        .map((genre: any) => genre.name)
-        .join(", ")}
+      {contentDetails?.genres?.length > 0 &&
+        contentDetails?.genres
+          .slice(0, 2)
+          .map((genre: any) => genre.name)
+          .join(", ")}
     </Text>
     {(contentDetails?.number_of_episodes || contentDetails?.runtime) && (
       <>
@@ -359,6 +361,7 @@ export default function Details() {
           headerTintColor: "white",
           headerBackVisible: true,
           headerShadowVisible: true,
+          headerBackButtonMenuEnabled: false,
         }}
       />
 
@@ -393,6 +396,7 @@ export default function Details() {
               <DetailView
                 contentDetails={contentDetails}
                 contentTrailer={contentTrailer}
+                mediaType={type}
               />
             </ScrollView>
           </View>

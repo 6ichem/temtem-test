@@ -27,6 +27,7 @@ model Content {
   bannerUrl   String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime?  @updatedAt
+  mediaType   String?
   favorites   Favorite[]
 }
 

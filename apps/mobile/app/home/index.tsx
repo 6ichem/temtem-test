@@ -48,10 +48,10 @@ const Filters = () => {
   const router = useRouter();
   return (
     <View style={filtersStyles.filterRow}>
-      <FilterButton iconName="file-list-line" title="Genres" />
       <FilterButton iconName="star-line" title="Top Rated" />
       <FilterButton iconName="film-line" title="Movies" />
       <FilterButton iconName="movie-line" title="Series" />
+      <FilterButton iconName="file-list-line" title="Actors" />
     </View>
   );
 };
