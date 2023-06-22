@@ -25,6 +25,7 @@ import StarRating from "react-native-star-rating-widget";
 import { MEDIA_TYPES } from "../../utils/constants";
 import CustomButton from "../../components/Button";
 import { AuthContext, AuthContextProvider } from "../auth/state/context";
+import { actionTypes } from "../auth/state/actions";
 
 const DetailView = ({ contentDetails, contentTrailer }: any) => {
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
@@ -32,10 +33,10 @@ const DetailView = ({ contentDetails, contentTrailer }: any) => {
   const { state, dispatch } = useContext(AuthContext);
   const { user }: any = state ?? {};
 
-  const [userFavorites, setUserFavorites] = useState(user.favorites ?? []);
+  const userFavorites = user?.favorites ?? [];
 
   const currentFav = userFavorites.find(
-    (item: any) => item.moviedbId === contentDetails.id
+    (item: any) => item.moviedbId == contentDetails.id
   );
 
   const isAlreadyFav = () => {
@@ -67,7 +68,14 @@ const DetailView = ({ contentDetails, contentTrailer }: any) => {
       });
 
       setIsFavoriteLoading(false);
-      setUserFavorites((prev: any) => [...prev, data.content]);
+
+      dispatch({
+        type: actionTypes.SET_USER,
+        payload: {
+          ...user,
+          favorites: [...userFavorites, data.content],
+        },
+      });
     } catch (error) {
       setIsFavoriteLoading(false);
       throw error;
@@ -86,9 +94,16 @@ const DetailView = ({ contentDetails, contentTrailer }: any) => {
       });
 
       setIsFavoriteLoading(false);
-      setUserFavorites((prev: any) =>
-        prev.filter((item: any) => item.id !== currentFav.id)
-      );
+
+      dispatch({
+        type: actionTypes.SET_USER,
+        payload: {
+          ...user,
+          favorites: userFavorites.filter(
+            (item: any) => item.id !== currentFav.id
+          ),
+        },
+      });
     } catch (error) {
       setIsFavoriteLoading(false);
       throw error;
