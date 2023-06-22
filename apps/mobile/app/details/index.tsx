@@ -185,20 +185,20 @@ const HeaderDetails = ({ contentDetails }: any) => (
       <Text style={detailStyles.DetailSub.TextStyle}>
         {extractReleaseYear(
           contentDetails?.first_air_date || contentDetails?.release_date
-        )}
+        )}{" "}
+        |{" "}
       </Text>
     )}
-    <Text style={detailStyles.DetailSub.TextStyle}> | </Text>
     <Text style={detailStyles.DetailSub.TextStyle}>
       {contentDetails?.genres?.length > 0 &&
         contentDetails?.genres
           .slice(0, 2)
           .map((genre: any) => genre.name)
-          .join(", ")}
+          .join(", ")}{" "}
+      |
     </Text>
     {(contentDetails?.number_of_episodes || contentDetails?.runtime) && (
       <>
-        <Text style={detailStyles.DetailSub.TextStyle}> | </Text>
         <Text style={detailStyles.DetailSub.TextStyle}>
           {contentDetails?.media_type === "tv" ? (
             <>Episodes: {contentDetails?.number_of_episodes}</>
@@ -440,14 +440,17 @@ const detailStyles = StyleSheet.create({
   },
   DetailSub: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 5,
+    textAlign: "center",
+    justifyContent: "center",
     marginTop: 5,
     marginBottom: 10,
+    width: "80%",
+    flexWrap: "wrap",
     TextStyle: {
       ...GlobalStyles.CustonFontRegular,
       color: "#A0A0A0",
       fontSize: 14,
+      textAlign: "center",
     },
   },
   DetailRatings: {
