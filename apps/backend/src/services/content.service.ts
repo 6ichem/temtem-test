@@ -93,3 +93,39 @@ export const getUpcoming = async () => {
     );
   }
 };
+
+export const getTopRatedMovies = async (req: Request) => {
+  const { page = 1 } = req.query;
+
+  try {
+    const { data }: any = await axios.get("movie/top_rated", {
+      params: {
+        page,
+      },
+    });
+
+    return data.results;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.status_message || "An internal error occurred"
+    );
+  }
+};
+
+export const getTopRatedShows = async (req: Request) => {
+  const { page = 1 } = req.query;
+
+  try {
+    const { data }: any = await axios.get("tv/top_rated", {
+      params: {
+        page,
+      },
+    });
+
+    return data.results;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.status_message || "An internal error occurred"
+    );
+  }
+};

@@ -6,6 +6,8 @@ import {
   Pressable,
   KeyboardAvoidingView,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import SafeLayout from "../../components/SafeLayout";
@@ -77,73 +79,75 @@ export default function SignIn() {
   };
 
   return (
-    <SafeLayout>
-      <View style={styles.Root}>
-        <View style={styles.imageContainer}>
-          <ImageBackground
-            source={require("../../assets/banner.jpg")}
-            style={styles.BannerImage}
-            resizeMode="cover"
-          />
-          <LinearGradient
-            style={{ ...StyleSheet.absoluteFillObject }}
-            colors={["#00000000", "#00000000", "#09090F"]}
-            locations={[0.2, 0.1, 1]}
-          />
-        </View>
-
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-          <View style={styles.container}>
-            <Text
-              style={{
-                ...styles.text,
-                marginBottom: loginError !== "" ? 12 : 24,
-              }}
-            >
-              Sign In
-            </Text>
-
-            {loginError !== "" && (
-              <View style={styles.errorContainer}>
-                <Icon name="error-warning-line" color="red" size={20} />
-                <Text style={styles.errorText}>{loginError}</Text>
-              </View>
-            )}
-
-            <View style={styles.form}>
-              <Input
-                placeholder="Username"
-                onChangeText={(e) =>
-                  handleLoginFormChange(AUTH_FORM.USERNAME, e)
-                }
-              />
-              <Input
-                placeholder="Password"
-                secureTextEntry
-                onChangeText={(e) =>
-                  handleLoginFormChange(AUTH_FORM.PASSWORD, e)
-                }
-              />
-            </View>
-
-            <Pressable
-              style={styles.signUpInfo}
-              onPress={() => router.push("/auth/sign-up")}
-            >
-              <Text style={styles.signUpInfo.signUpText}>
-                Don't have an account? Sign up here
-              </Text>
-            </Pressable>
-
-            <CustomButton
-              title="Login"
-              isLoading={isLoading}
-              onPress={handleSubmitLogin}
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeLayout isFaded={false}>
+        <View style={styles.Root}>
+          <View style={styles.imageContainer}>
+            <ImageBackground
+              source={require("../../assets/banner.jpg")}
+              style={styles.BannerImage}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              style={{ ...StyleSheet.absoluteFillObject }}
+              colors={["#00000000", "#00000000", "#09090F"]}
+              locations={[0.2, 0.1, 1]}
             />
           </View>
-        </KeyboardAvoidingView>
-      </View>
-    </SafeLayout>
+
+          <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+            <View style={styles.container}>
+              <Text
+                style={{
+                  ...styles.text,
+                  marginBottom: loginError !== "" ? 12 : 24,
+                }}
+              >
+                Sign In
+              </Text>
+
+              {loginError !== "" && (
+                <View style={styles.errorContainer}>
+                  <Icon name="error-warning-line" color="red" size={20} />
+                  <Text style={styles.errorText}>{loginError}</Text>
+                </View>
+              )}
+
+              <View style={styles.form}>
+                <Input
+                  placeholder="Username"
+                  onChangeText={(e) =>
+                    handleLoginFormChange(AUTH_FORM.USERNAME, e)
+                  }
+                />
+                <Input
+                  placeholder="Password"
+                  secureTextEntry
+                  onChangeText={(e) =>
+                    handleLoginFormChange(AUTH_FORM.PASSWORD, e)
+                  }
+                />
+              </View>
+
+              <Pressable
+                style={styles.signUpInfo}
+                onPress={() => router.push("/auth/sign-up")}
+              >
+                <Text style={styles.signUpInfo.signUpText}>
+                  Don't have an account? Sign up here
+                </Text>
+              </Pressable>
+
+              <CustomButton
+                title="Login"
+                isLoading={isLoading}
+                onPress={handleSubmitLogin}
+              />
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </SafeLayout>
+    </TouchableWithoutFeedback>
   );
 }
 

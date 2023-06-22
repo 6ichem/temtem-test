@@ -9,7 +9,7 @@ const androidUrl = "http://10.0.2.2";
 const url = Platform.OS === "ios" ? iosUrl : androidUrl;
 
 export const http = axios.create({
-  baseURL: `${url}:4200/api`,
+  baseURL: `http://192.168.1.64:4200/api`,
 });
 
 export const initHttpToken = async () => {

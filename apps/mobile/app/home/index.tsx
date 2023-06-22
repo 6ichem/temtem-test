@@ -22,6 +22,7 @@ import { IMAGE_TYPES } from "./constants";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../auth/state/context";
+import { MEDIA_TYPES } from "../../utils/constants";
 
 const FilterButton = ({
   iconName,
@@ -48,15 +49,21 @@ const Filters = () => {
   const router = useRouter();
   return (
     <View style={filtersStyles.filterRow}>
-      <FilterButton iconName="star-line" title="Top Rated" />
-      <FilterButton iconName="film-line" title="Movies" />
-      <FilterButton iconName="movie-line" title="Series" />
-      <FilterButton iconName="group-fill" title="Actors" />
+      <FilterButton
+        iconName="film-line"
+        title="Movies"
+        onPress={() => router.push("/movies")}
+      />
+      <FilterButton
+        iconName="movie-line"
+        title="Series"
+        onPress={() => router.push("/shows")}
+      />
     </View>
   );
 };
 
-const ContentItem = ({ data }: { data: any[] }) => {
+const ContentItem = ({ data, type }: { data: any[]; type?: string }) => {
   const router = useRouter();
   return (
     <View style={{ marginTop: 12 }}>
@@ -70,7 +77,9 @@ const ContentItem = ({ data }: { data: any[] }) => {
             style={resultsStyles.resultItem}
             key={item.id}
             onPress={() =>
-              router.push(`/details?id=${item.id}&type=${item.media_type}`)
+              router.push(
+                `/details?id=${item.id}&type=${item.media_type || type}`
+              )
             }
           >
             <Image
@@ -212,7 +221,7 @@ export default function Home() {
       </View>
 
       <View>
-        <ContentItem data={airingContent} />
+        <ContentItem data={airingContent} type={MEDIA_TYPES.TV} />
       </View>
     </View>
   );
@@ -225,7 +234,7 @@ export default function Home() {
       </View>
 
       <View>
-        <ContentItem data={upcomingContent} />
+        <ContentItem data={upcomingContent} type={MEDIA_TYPES.MOVIE} />
       </View>
     </View>
   );
@@ -329,7 +338,7 @@ const filtersStyles = StyleSheet.create({
     backgroundColor: "#51535E",
     color: "white",
     borderRadius: 16,
-    width: 62,
+    width: 160,
     alignSelf: "center",
   },
   filterButtonTitle: {

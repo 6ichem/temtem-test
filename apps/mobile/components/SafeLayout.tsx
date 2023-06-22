@@ -5,7 +5,7 @@ import fonts from "../core/fonts";
 import { StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function SafeLayout({ children }: any) {
+export default function SafeLayout({ children, isFaded = true }: any) {
   let [fontsLoaded] = useFonts(fonts);
 
   if (!fontsLoaded) {
@@ -19,12 +19,14 @@ export default function SafeLayout({ children }: any) {
         {children}
       </SafeAreaView>
 
-      <LinearGradient
-        style={{ ...StyleSheet.absoluteFillObject }}
-        colors={["#00000000", "#00000000", "#09090F"]}
-        locations={[0.2, 0.8, 1]}
-        pointerEvents="none" // Allow touch events to pass through
-      />
+      {isFaded && (
+        <LinearGradient
+          style={{ ...StyleSheet.absoluteFillObject }}
+          colors={["#00000000", "#00000000", "#09090F"]}
+          locations={[0.2, 0.8, 1]}
+          pointerEvents="none" // Allow touch events to pass through
+        />
+      )}
     </SafeAreaProvider>
   );
 }

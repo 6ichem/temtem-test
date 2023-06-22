@@ -17,7 +17,6 @@ export class createFavoriteDto {
   @IsString()
   public title: string;
 
-  @IsNotEmpty()
   @IsString()
   public description: string;
 

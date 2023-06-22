@@ -7,6 +7,8 @@ import {
   Pressable,
   KeyboardAvoidingView,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import SafeLayout from "../../components/SafeLayout";
@@ -84,77 +86,79 @@ export default function SignUp() {
   };
 
   return (
-    <SafeLayout>
-      <View style={styles.Root}>
-        <View style={styles.imageContainer}>
-          <ImageBackground
-            source={require("../../assets/banner2.jpg")}
-            style={styles.BannerImage}
-            resizeMode="cover"
-          />
-          <LinearGradient
-            style={{ ...StyleSheet.absoluteFillObject }}
-            colors={["#00000000", "#00000000", "#09090F"]}
-            locations={[0.2, 0.1, 1]}
-          />
-        </View>
+    <SafeLayout isFaded={false}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.Root}>
+          <View style={styles.imageContainer}>
+            <ImageBackground
+              source={require("../../assets/banner2.jpg")}
+              style={styles.BannerImage}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              style={{ ...StyleSheet.absoluteFillObject }}
+              colors={["#00000000", "#00000000", "#09090F"]}
+              locations={[0.2, 0.1, 1]}
+            />
+          </View>
 
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-          <ScrollView
-            contentContainerStyle={styles.contentContainer}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.container}>
-              <Text
-                style={{
-                  ...styles.text,
-                  marginBottom: registerError !== "" ? 12 : 24,
-                }}
-              >
-                Sign up
-              </Text>
+          <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+            <ScrollView
+              contentContainerStyle={styles.contentContainer}
+              keyboardShouldPersistTaps="handled"
+            >
+              <View style={styles.container}>
+                <Text
+                  style={{
+                    ...styles.text,
+                    marginBottom: registerError !== "" ? 12 : 24,
+                  }}
+                >
+                  Sign up
+                </Text>
 
-              {registerError !== "" && (
-                <View style={styles.errorContainer}>
-                  <Icon name="error-warning-line" color="red" size={20} />
-                  <Text style={styles.errorText}>{registerError}</Text>
+                {registerError !== "" && (
+                  <View style={styles.errorContainer}>
+                    <Icon name="error-warning-line" color="red" size={20} />
+                    <Text style={styles.errorText}>{registerError}</Text>
+                  </View>
+                )}
+
+                <View style={styles.form}>
+                  <Input
+                    placeholder="Username"
+                    onChangeText={(e) =>
+                      handleRegisterFormChange(AUTH_FORM.USERNAME, e)
+                    }
+                  />
+                  <Input
+                    placeholder="Password"
+                    secureTextEntry
+                    onChangeText={(e) =>
+                      handleRegisterFormChange(AUTH_FORM.PASSWORD, e)
+                    }
+                  />
                 </View>
-              )}
 
-              <View style={styles.form}>
-                <Input
-                  placeholder="Username"
-                  onChangeText={(e) =>
-                    handleRegisterFormChange(AUTH_FORM.USERNAME, e)
-                  }
-                />
-                <Input
-                  placeholder="Password"
-                  secureTextEntry
-                  onChangeText={(e) =>
-                    handleRegisterFormChange(AUTH_FORM.PASSWORD, e)
-                  }
+                <Pressable
+                  style={styles.signUpInfo}
+                  onPress={() => router.push("/auth/sign-in")}
+                >
+                  <Text style={styles.signUpInfo.signUpText}>
+                    Already have an account? Sign in here
+                  </Text>
+                </Pressable>
+
+                <CustomButton
+                  title="Register"
+                  isLoading={isLoading}
+                  onPress={handleSubmitRegister}
                 />
               </View>
-
-              <Pressable
-                style={styles.signUpInfo}
-                onPress={() => router.push("/auth/sign-in")}
-              >
-                <Text style={styles.signUpInfo.signUpText}>
-                  Already have an account? Sign in here
-                </Text>
-              </Pressable>
-
-              <CustomButton
-                title="Register"
-                isLoading={isLoading}
-                onPress={handleSubmitRegister}
-              />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </View>
+      </TouchableWithoutFeedback>
     </SafeLayout>
   );
 }

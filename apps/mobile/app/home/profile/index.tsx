@@ -147,12 +147,13 @@ const listItemStyles = StyleSheet.create({
   },
   title: {
     ...GlobalStyles.CustomFontSemiBold,
-    fontSize: 20,
+    fontSize: 16,
     color: "white",
+    flexWrap: "wrap",
   },
   sub: {
     ...GlobalStyles.CustonFontRegular,
-    fontSize: 14,
+    fontSize: 12,
     color: "#A0A0A0",
   },
 });

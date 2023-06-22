@@ -4,6 +4,8 @@ import {
   getAiringToday,
   getContentDetails,
   getContentTrailer,
+  getTopRatedMovies,
+  getTopRatedShows,
   getTrending,
   getUpcoming,
   querySearch,
@@ -64,6 +66,26 @@ router.get("/airing-today", authenticateJWT, async (req, res) => {
 router.get("/upcoming-movies", authenticateJWT, async (req, res) => {
   try {
     const resp = await getUpcoming();
+
+    return res.json(resp);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+router.get("/top-rated-movies", authenticateJWT, async (req, res) => {
+  try {
+    const resp = await getTopRatedMovies(req);
+
+    return res.json(resp);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+router.get("/top-rated-shows", authenticateJWT, async (req, res) => {
+  try {
+    const resp = await getTopRatedShows(req);
 
     return res.json(resp);
   } catch (error: any) {
