@@ -127,7 +127,7 @@ const DetailView = ({ contentDetails, contentTrailer, mediaType }: any) => {
             starSize={24}
           />
 
-          <Text style={detailStyles.DetailSub.TextStyle}>
+          <Text style={detailStyles.TextStyle}>
             ({contentDetails?.vote_count})
           </Text>
         </View>
@@ -182,14 +182,14 @@ const DetailView = ({ contentDetails, contentTrailer, mediaType }: any) => {
 const HeaderDetails = ({ contentDetails }: any) => (
   <View style={detailStyles.DetailSub}>
     {(contentDetails?.first_air_date || contentDetails?.release_date) && (
-      <Text style={detailStyles.DetailSub.TextStyle}>
+      <Text style={detailStyles.TextStyle}>
         {extractReleaseYear(
           contentDetails?.first_air_date || contentDetails?.release_date
         )}{" "}
         |{" "}
       </Text>
     )}
-    <Text style={detailStyles.DetailSub.TextStyle}>
+    <Text style={detailStyles.TextStyle}>
       {contentDetails?.genres?.length > 0 &&
         contentDetails?.genres
           .slice(0, 2)
@@ -199,7 +199,7 @@ const HeaderDetails = ({ contentDetails }: any) => (
     </Text>
     {(contentDetails?.number_of_episodes || contentDetails?.runtime) && (
       <>
-        <Text style={detailStyles.DetailSub.TextStyle}>
+        <Text style={detailStyles.TextStyle}>
           {contentDetails?.media_type === "tv" ? (
             <>Episodes: {contentDetails?.number_of_episodes}</>
           ) : (
@@ -446,12 +446,12 @@ const detailStyles = StyleSheet.create({
     marginBottom: 10,
     width: "80%",
     flexWrap: "wrap",
-    TextStyle: {
-      ...GlobalStyles.CustonFontRegular,
-      color: "#A0A0A0",
-      fontSize: 14,
-      textAlign: "center",
-    },
+  },
+  TextStyle: {
+    ...GlobalStyles.CustonFontRegular,
+    color: "#A0A0A0",
+    fontSize: 14,
+    textAlign: "center",
   },
   DetailRatings: {
     flexDirection: "row",
