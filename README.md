@@ -4,6 +4,11 @@ Creation of a web application: Movie app FlixFlex.
 
 ## Run
 
+Install dependencies (in the root directory temtem-test):
+```sh
+yarn install
+```
+
 Android:
 ```sh
 yarn run-android
